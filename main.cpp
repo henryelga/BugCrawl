@@ -2,11 +2,21 @@
 sf::CircleShape shape (0.f);
 #include <vector>
 #include <iostream>
+
+#include "Board.h"
+
 using namespace std;
 using namespace sf;
 int main()
 {
     cout << "Sample Board" << endl;
+
+    Board board;
+
+
+
+    board.displayBoard();
+
 }
 
 

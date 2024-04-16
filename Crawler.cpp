@@ -26,46 +26,42 @@ bool Crawler::isWayBlocked() {
     int y = position.second;
 
     // x = 0
-    if(x == 0){
-        if(y == 0){
-            if(direction == Direction::North || direction == Direction::West){
+    if (x == 0) {
+        if (y == 0) {
+            if (direction == Direction::North || direction == Direction::West) {
                 return true;
             }
-        }
-        else if(y == 9){
-            if(direction == Direction::South || direction == Direction::West){
+        } else if (y == 9) {
+            if (direction == Direction::South || direction == Direction::West) {
                 return true;
             }
-        }
-        else if(direction == Direction::West){
+        } else if (direction == Direction::West) {
             return true;
         }
     }
 
     //x = 9
-    if(x == 9){
-        if(y == 0){
-            if(direction == Direction::North || direction == Direction::East){
+    if (x == 9) {
+        if (y == 0) {
+            if (direction == Direction::North || direction == Direction::East) {
                 return true;
             }
-        }
-        else if(y == 9){
-            if(direction == Direction::South || direction == Direction::East){
+        } else if (y == 9) {
+            if (direction == Direction::South || direction == Direction::East) {
                 return true;
             }
-        }
-        else if(direction == Direction::East){
+        } else if (direction == Direction::East) {
             return true;
         }
     }
 
     //y = 0
-    if(y == 0 && direction == Direction::North){
+    if (y == 0 && direction == Direction::North) {
         return true;
     }
 
     //y = 9
-    if(y == 9 && direction == Direction::South){
+    if (y == 9 && direction == Direction::South) {
         return true;
     }
     return false;
