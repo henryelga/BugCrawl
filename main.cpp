@@ -1,107 +1,81 @@
 #include <SFML/Graphics.hpp>
-sf::CircleShape shape (0.f);
+
+sf::CircleShape shape(0.f);
+
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include "Board.h"
+#include "Bug.h"
+#include "Crawler.h"
+#include "Hopper.h"
 
 using namespace std;
 using namespace sf;
-int main()
-{
-    cout << "Sample Board" << endl;
 
+int main() {
+    ifstream fin("bugs.txt");
+    ofstream fout("bugs_life_history_date_time.txt");
+    cout << "Sample Board" << endl;
     Board board;
 
+    int choice;
+
+    do {
+        // Display menu
+        cout << "Menu Items" << endl;
+        cout << "1. Initialize Bug Board (load data from file)" << endl;
+        cout << "2. Display all Bugs" << endl;
+        cout << "3. Find a Bug (given an id)" << endl;
+        cout << "4. Tap the Bug Board (causes move all, then fight/eat)" << endl;
+        cout << "5. Display Life History of all Bugs (path taken)" << endl;
+        cout << "6. Exit: Write Life History of all Bugs to file" << endl;
+        cout << "7. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                board.intializeBugs(fin);
+                break;
+            case 2:
+                board.displayAllBugs();
+                break;
+            case 3:
+                int bugId;
+                cout << "Enter Bug ID to find: ";
+                cin >> bugId;
+                board.findaBug(bugId);
+                break;
+            case 4:
+                board.tapBoard();
+                board.displayAllBugs();
+                break;
+            case 5:
+                board.displayLifeHistory();
+                break;
+            case 6:
+                board.writeLifeHistory(fout);
+                cout << "Life history written to file." << endl;
+                break;
+            case 7:
+                cout << "Exiting program..." << endl;
+                break;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+                break;
+        }
+
+        cout << endl;
+
+    } while (choice != 7);
+
+    fin.close(); // Close input file stream
+    fout.close(); // Close output file stream
 
 
-    board.displayBoard();
-
+    return 0;
 }
 
-
-
-//{
-//    sf::RenderWindow window(sf::VideoMode(500, 500), "SFML works!");
-//
-////    sf::RectangleShape btn1;
-////    btn1.setSize(sf::Vector2f(100, 25));
-////    shape.setPosition(175, 0);
-////    shape.setFillColor(sf::Color::Green);
-//
-//    vector<sf::RectangleShape> bg;
-//    for(int r = 0; r < 10; r++){
-//        for(int c = 0; c < 10; c++){
-//            sf::RectangleShape shape;
-//            shape.setPosition(r*50, c*50);
-//            shape.setSize(sf::Vector2f(50,50));
-//            shape.setFillColor((r+c)%2==0?sf::Color::Black:sf::Color::White);
-//            bg.push_back(shape);
-//        }
-//    }
-//
-//    int dir = 0;
-//    window.setFramerateLimit(40);
-//    bool isSelected = false;
-//    while (window.isOpen()) {
-//        sf::Event event;
-//        while (window.pollEvent(event)) {
-//            if (event.type == sf::Event::Closed)
-//                window.close();
-//            if (event.type == sf::Event::MouseButtonPressed) {
-//
-//
-//                int mouseX = event.mouseButton.x;
-//                int mouseY = event.mouseButton.y;
-//
-//                if (mouseX >= shape.getPosition().x && mouseX <= shape.getPosition().x + 50
-//                    && mouseY >= shape.getPosition().y && mouseY <= shape.getPosition().y + 50) {
-//                    isSelected = true;
-//                    shape.setFillColor(sf::Color::Blue);
-//                } else {
-//                    isSelected = false;
-//                    shape.setFillColor(sf::Color::Green);
-//                }
-//            }
-//            else if (event.type == sf::Event::MouseButtonReleased) {
-//                if (isSelected) {
-//                    isSelected = false;
-//                    shape.setFillColor(sf::Color::Green);
-//                }
-//            } else if (event.type == sf::Event::MouseMoved) {
-//                if (isSelected) {
-//                    shape.setPosition(event.mouseMove.x-25, event.mouseMove.y-25);
-//                }
-//
-//            }
-//        }
-//
-//        window.clear();
-//        for(RectangleShape &s: bg){
-//            window.draw(s);
-//        }
-//        window.draw(shape);
-////        window.draw(btn1);
-//        window.display();
-//    }
-//    return 0;
-//}
-//
-//void mouseClicked(int x, int y)
-//{
-//    if(x >= 290 && x >= 390 && y>= 5 && y <= 30 )
-//    {
-//        shape.setFillColor(sf::Color::Red);
-//    }
-//}
-
-
-/*
-bool contains(int x, int y)
-{
-    int shapeX = ((int)shape.getPosition().x/50)*50;
-    int shapeY = ((int)shape.getPosition().x/50)*50;
-    cout << shapeX << ", " << shapeY <<
-    return x == shapeX && y == shapeY;
-}
-*/

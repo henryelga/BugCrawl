@@ -5,66 +5,40 @@
 #include <cstdlib> // For rand
 #include <ctime>   // For time
 
+//Crawler::Crawler(int bugId, pair<int, int> position, Direction direction, int size, list<pair<int,int>> path, bool alive) {
+//    this->type = 'C';
+//    this->id = bugId;
+//    this->position = position;
+//    this->direction = direction;
+//    this->size = size;
+//    this->path = path;
+//    this->alive = alive;
+//}
+
 void Crawler::move() {
     pair<int, int> newPosition = position;
-    if (direction == Direction::North) {
-        newPosition.second += 1;
-    } else if (direction == Direction::South) {
-        newPosition.second -= 1;
-    } else if (direction == Direction::East) {
-        newPosition.first += 1;
-    } else if (direction == Direction::West) {
-        newPosition.first -= 1;
+    while (isWayBlocked()) {
+        srand(time(nullptr));
+        direction = rand() % 4 + 1;
+    }
+
+    switch (direction) {
+        case 1: // Facing North
+            newPosition.second -= 1;
+            break;
+        case 2: // Facing East
+            newPosition.first += 1;
+            break;
+        case 3: // Facing South
+            newPosition.second += 1;
+            break;
+        case 4: // Facing West
+            newPosition.first -= 1;
+            break;
+        default:
+            break;
     }
 
     path.push_back(newPosition);
     position = newPosition;
 }
-
-bool Crawler::isWayBlocked() {
-    int x = position.first;
-    int y = position.second;
-
-    // x = 0
-    if (x == 0) {
-        if (y == 0) {
-            if (direction == Direction::North || direction == Direction::West) {
-                return true;
-            }
-        } else if (y == 9) {
-            if (direction == Direction::South || direction == Direction::West) {
-                return true;
-            }
-        } else if (direction == Direction::West) {
-            return true;
-        }
-    }
-
-    //x = 9
-    if (x == 9) {
-        if (y == 0) {
-            if (direction == Direction::North || direction == Direction::East) {
-                return true;
-            }
-        } else if (y == 9) {
-            if (direction == Direction::South || direction == Direction::East) {
-                return true;
-            }
-        } else if (direction == Direction::East) {
-            return true;
-        }
-    }
-
-    //y = 0
-    if (y == 0 && direction == Direction::North) {
-        return true;
-    }
-
-    //y = 9
-    if (y == 9 && direction == Direction::South) {
-        return true;
-    }
-    return false;
-}
-
-

@@ -9,11 +9,19 @@
 
 class Hopper : public Bug {
 private:
-    int hopLength;
+    int hopLength{};
 
 public:
+    Hopper(int id,
+            pair<int, int> position,
+            int direction,
+            int size, int hopLength): Bug(id, position, direction, size, hopLength){
+        this->type = "Hopper";
+        this->alive = true;
+        this->path = {this->position};
+    };
+
     void move() override; // Override the move function
-    bool isWayBlocked() override; // Override the isWayBlocked function
 };
 
 #endif //SFML_002_HOPPER_H

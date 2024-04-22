@@ -6,13 +6,29 @@
 #include <ctime>   // For time
 
 void Hopper::move() {
-    // Implementation of the move function for the Hopper bug
-    // ...
+    pair<int, int> newPosition = position;
+    while (isWayBlocked()) {
+        srand(time(nullptr));
+        direction = rand() % 4 + 1;
+    }
+
+    switch (direction) {
+        case 1: // Facing North
+            newPosition.second += hopLength;
+            break;
+        case 2: // Facing East
+            newPosition.first += hopLength;
+            break;
+        case 3: // Facing South
+            newPosition.second -= hopLength;
+            break;
+        case 4: // Facing West
+            newPosition.first -= hopLength;
+            break;
+        default:
+            break;
+    }
+
+    path.push_back(newPosition);
+    position = newPosition;
 }
-
-bool Hopper::isWayBlocked() {
-    // Implementation of the isWayBlocked function for the Hopper bug
-    // ...
-}
-
-
