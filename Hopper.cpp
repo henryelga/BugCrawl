@@ -14,16 +14,16 @@ void Hopper::move() {
 
     switch (direction) {
         case 1: // Facing North
-            newPosition.second += hopLength;
+            newPosition.second -= getHopLength();
             break;
         case 2: // Facing East
-            newPosition.first += hopLength;
+            newPosition.first += getHopLength();
             break;
         case 3: // Facing South
-            newPosition.second -= hopLength;
+            newPosition.second += getHopLength();
             break;
         case 4: // Facing West
-            newPosition.first -= hopLength;
+            newPosition.first -= getHopLength();
             break;
         default:
             break;

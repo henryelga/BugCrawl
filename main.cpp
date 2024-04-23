@@ -31,7 +31,7 @@ int main() {
         cout << "3. Find a Bug (given an id)" << endl;
         cout << "4. Tap the Bug Board (causes move all, then fight/eat)" << endl;
         cout << "5. Display Life History of all Bugs (path taken)" << endl;
-        cout << "6. Exit: Write Life History of all Bugs to file" << endl;
+        cout << "6. Display all Cells listing their Bugs " << endl;
         cout << "7. Exit" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
@@ -51,14 +51,12 @@ int main() {
                 break;
             case 4:
                 board.tapBoard();
-                board.displayAllBugs();
                 break;
             case 5:
                 board.displayLifeHistory();
                 break;
             case 6:
-                board.writeLifeHistory(fout);
-                cout << "Life history written to file." << endl;
+                board.displayAllCells();
                 break;
             case 7:
                 cout << "Exiting program..." << endl;

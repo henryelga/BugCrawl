@@ -5,16 +5,6 @@
 #include <sstream>
 #include <fstream>
 
-Board::Board(const vector<vector<Bug *>> &cells) : cells(cells) {};
-
-
-Board::Board() {
-
-}
-
-Board::~Board() {
-
-}
 
 void Board::intializeBugs(ifstream &fin) {
 
@@ -192,6 +182,34 @@ void Board::writeLifeHistory(ofstream &fout) {
         fout << (bug->isAlive() ? "Alive" : "Dead") << endl;
     }
     cout << "done" << endl;
+}
+
+void Board::displayAllCells() {
+    for (auto bug: bugs_vector) {
+        auto position = bug->getPosition();
+        int x = position.first;
+        int y = position.second;
+        if (x >= 0 && x < 10 && y >= 0 && y < 10) { // Check if bug's position is within the board bounds
+            cells[x][y].push_back(bug);
+        }
+    }
+
+    // Display all cells
+    cout << "Displaying all Cells:" << endl;
+    for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 10; ++j) {
+            cout << "(" << i << "," << j << "): ";
+            if (cells[i][j].empty()) {
+                cout << "empty";
+            } else {
+                for (Bug *bug: cells[i][j]) {
+                    cout << bug->getType() << " " << bug->getId();
+                    cout << " ";
+                }
+            }
+            cout << " " << endl;
+        }
+    }
 }
 
 

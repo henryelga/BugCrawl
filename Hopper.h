@@ -8,7 +8,7 @@
 #include "Bug.h"
 
 class Hopper : public Bug {
-private:
+protected:
     int hopLength{};
 
 public:
