@@ -56,27 +56,53 @@ int Bug::getHopLength() const {
 //    return false;
 //}
 
+//bool Bug::isWayBlocked() {
+//    int x = position.first;
+//    int y = position.second;
+//
+//    // Check if the bug is at the edge of the board and cannot move in the current direction
+//    if ((x == 0 || y == 0) && (direction == 1 || direction == 4)) {
+//        // Bug is at the left edge and moving North or West
+//        return true;
+//    } else if (x == 9 && (direction == 1 || direction == 2)) {
+//        // Bug is at the right edge and moving East or South
+//        return true;
+//    } else if (y == 0 && direction == 4) {
+//        // Bug is at the bottom edge and moving West
+//        return true;
+//    } else if (y == 9 && direction == 3) {
+//        // Bug is at the top edge and moving South
+//        return true;
+//    }
+//
+//    // If none of the above conditions match, the way is not blocked
+//    return false;
+//}
+
 bool Bug::isWayBlocked() {
     int x = position.first;
     int y = position.second;
 
-    // Check if the bug is at the edge of the board and cannot move in the current direction
-    if (x == 0 && (direction == 1 || direction == 4)) {
-        // Bug is at the left edge and moving North or West
-        return true;
-    } else if (x == 9 && (direction == 2 || direction == 3)) {
-        // Bug is at the right edge and moving East or South
-        return true;
-    } else if (y == 0 && direction == 4) {
-        // Bug is at the bottom edge and moving West
-        return true;
-    } else if (y == 9 && direction == 3) {
-        // Bug is at the top edge and moving South
-        return true;
+    switch (direction) {
+        case 1: // North
+            return (y == 0);
+        case 2: // East
+            return (x == 9);
+        case 3: // South
+            return (y == 9);
+        case 4: // West
+            return (x == 0);
+        default:
+            return false;
     }
+}
 
-    // If none of the above conditions match, the way is not blocked
-    return false;
+void Bug::setSize(int size) {
+    Bug::size = size;
+}
+
+void Bug::setAlive(bool alive) {
+    Bug::alive = alive;
 }
 
 

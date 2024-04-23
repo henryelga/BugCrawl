@@ -13,21 +13,27 @@ void Hopper::move() {
     }
 
     switch (direction) {
-        case 1: // Facing North
+        case 1: // North
             newPosition.second -= getHopLength();
             break;
-        case 2: // Facing East
+        case 2: // East
             newPosition.first += getHopLength();
             break;
-        case 3: // Facing South
+        case 3: // South
             newPosition.second += getHopLength();
             break;
-        case 4: // Facing West
+        case 4: // West
             newPosition.first -= getHopLength();
             break;
         default:
             break;
     }
+
+    // if hopper hops less than 0, pick the maximum numb
+    // if hopper hops more than 9, pick the minimum num
+    newPosition.first = max(0, min(newPosition.first, 9));
+    newPosition.second = max(0, min(newPosition.second, 9));
+
 
     path.push_back(newPosition);
     position = newPosition;

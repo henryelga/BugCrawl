@@ -4,6 +4,11 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <algorithm>
+#include <thread>
+
+using namespace this_thread;
+using namespace chrono;
 
 
 void Board::intializeBugs(ifstream &fin) {
@@ -15,6 +20,7 @@ void Board::intializeBugs(ifstream &fin) {
             parseLine(line);
         }
         fin.close();
+        cout << "Bug Board Initialized" << endl;
     } else
         cout << "Unable to open file, or file is empty.";
 }
@@ -33,60 +39,38 @@ void Board::parseLine(const string &strLine) {
     int direction;
     int size;
     int hopLength;
-
+    Bug *temp;
     try {
+        getline(strStream, strTemp, DELIMITER);
+        bug_id = stoi(strTemp);
 
+        getline(strStream, strTemp, DELIMITER);
+        x = stoi(strTemp);
+
+        getline(strStream, strTemp, DELIMITER);
+        y = stoi(strTemp);
+
+        getline(strStream, strTemp, DELIMITER);
+        direction = stoi(strTemp);
+
+        getline(strStream, strTemp, DELIMITER);
+        size = stoi(strTemp);
+        pair<int, int> position = make_pair(x, y);
         if (bug_type == "C") {
-            getline(strStream, strTemp, DELIMITER);
-            bug_id = stoi(strTemp);
-
-            getline(strStream, strTemp, DELIMITER);
-            x = stoi(strTemp);
-
-            getline(strStream, strTemp, DELIMITER);
-            y = stoi(strTemp);
-
-            getline(strStream, strTemp, DELIMITER);
-            direction = stoi(strTemp);
-
-            getline(strStream, strTemp, DELIMITER);
-            size = stoi(strTemp);
-
-            pair<int, int> position = make_pair(x, y);
-
-            bugs_vector.push_back(new Crawler(bug_id, position, direction, size));
-
+            temp = new Crawler(bug_id, position, direction, size);
         } else if (bug_type == "H") {
             getline(strStream, strTemp, DELIMITER);
-            bug_id = stoi(strTemp);
-
-            getline(strStream, strTemp, DELIMITER);
-            x = stoi(strTemp);
-
-            getline(strStream, strTemp, DELIMITER);
-            y = stoi(strTemp);
-
-            getline(strStream, strTemp, DELIMITER);
-            direction = stoi(strTemp);
-
-            getline(strStream, strTemp, DELIMITER);
-            size = stoi(strTemp);
-
-            getline(strStream, strTemp, DELIMITER);
             hopLength = stoi(strTemp);
-
-            pair<int, int> position = make_pair(x, y);
-
-            bugs_vector.push_back(new Hopper(bug_id, position, direction, size, hopLength));
-
+            temp = new Hopper(bug_id, position, direction, size, hopLength);
         }
-
+        bugs_vector.push_back(temp);
+        cells[x][y].push_back(temp);
     }
-    catch (std::invalid_argument const &e) {
-        cout << "Bad input: std::invalid_argument thrown" << '\n';
+    catch (invalid_argument const &e) {
+        cout << "Bad input: invalid_argument thrown" << '\n';
     }
-    catch (std::out_of_range const &e) {
-        cout << "Integer overflow: std::out_of_range thrown" << '\n';
+    catch (out_of_range const &e) {
+        cout << "Integer overflow: out_of_range thrown" << '\n';
     }
 }
 
@@ -153,7 +137,34 @@ void Board::findaBug(int id) const {
 
 void Board::tapBoard() {
     for (Bug *bug: bugs_vector) {
+        vector<Bug *> &v = cells[bug->getPosition().first][bug->getPosition().second];
+        v.erase(remove(v.begin(), v.end(), bug));
         bug->move();
+        cells[bug->getPosition().first][bug->getPosition().second].push_back(bug);
+
+    }
+    cout << "Bug Board Tapped!" << endl;
+
+    for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 10; ++j) {
+            if (!cells[i][j].empty()) {
+                for (Bug *bug: cells[i][j]) {
+                    sort(cells[i][j].begin(), cells[i][j].end(), [](Bug *a, Bug *b) {
+                        return a->getSize() > b->getSize();
+                    });
+                }
+                Bug *bigBug = cells[i][j][0];
+                for (int k = 1; k < cells[i][j].size(); k++) {
+                    Bug *tempBug = cells[i][j][k];
+                    if (tempBug->isAlive()) {
+                        bigBug->setSize(bigBug->getSize() + tempBug->getSize());
+                        tempBug->setAlive(false);
+                        cout << "Killed " << tempBug->getId() << endl;
+                    }
+
+                }
+            }
+        }
     }
 }
 
@@ -185,15 +196,6 @@ void Board::writeLifeHistory(ofstream &fout) {
 }
 
 void Board::displayAllCells() {
-    for (auto bug: bugs_vector) {
-        auto position = bug->getPosition();
-        int x = position.first;
-        int y = position.second;
-        if (x >= 0 && x < 10 && y >= 0 && y < 10) { // Check if bug's position is within the board bounds
-            cells[x][y].push_back(bug);
-        }
-    }
-
     // Display all cells
     cout << "Displaying all Cells:" << endl;
     for (int i = 0; i < 10; ++i) {
@@ -203,12 +205,37 @@ void Board::displayAllCells() {
                 cout << "empty";
             } else {
                 for (Bug *bug: cells[i][j]) {
-                    cout << bug->getType() << " " << bug->getId();
-                    cout << " ";
+                    if (bug->isAlive()) {
+                        cout << bug->getType() << " " << bug->getId();
+                        cout << " ";
+                    }
                 }
             }
             cout << " " << endl;
         }
+    }
+}
+
+void Board::runStimulation() {
+    cout << "Running Stimulation" << endl;
+    bool gameRunning = true;
+    while (gameRunning) {
+        tapBoard();
+        int bugCount = 0;
+        Bug *winner;
+        for (Bug *bug: bugs_vector) {
+            if (bug->isAlive()) {
+                bugCount++;
+                winner = bug;
+            }
+        }
+        if (bugCount == 1) {
+            cout << "Winner: Bug " << winner->getId() << "!" << endl;
+            gameRunning = false;
+        } else {
+//            sleep_for(seconds(1));
+        }
+
     }
 }
 

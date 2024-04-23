@@ -32,7 +32,8 @@ int main() {
         cout << "4. Tap the Bug Board (causes move all, then fight/eat)" << endl;
         cout << "5. Display Life History of all Bugs (path taken)" << endl;
         cout << "6. Display all Cells listing their Bugs " << endl;
-        cout << "7. Exit" << endl;
+        cout << "7. Run Stimulation (generates a tap every second)" << endl;
+        cout << "8. Exit" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -59,6 +60,9 @@ int main() {
                 board.displayAllCells();
                 break;
             case 7:
+                board.runStimulation();
+                break;
+            case 8:
                 cout << "Exiting program..." << endl;
                 break;
             default:
@@ -68,7 +72,7 @@ int main() {
 
         cout << endl;
 
-    } while (choice != 7);
+    } while (choice != 8);
 
     fin.close(); // Close input file stream
     fout.close(); // Close output file stream

@@ -56,7 +56,9 @@ public:
     int getSize() const { return size; };
     bool isAlive() const { return alive; };
     const list<pair<int, int>> &getPath() const { return path; };
-    // destructor
+
+    void setSize(int size);
+    void setAlive(bool alive);
 };
 
 #endif //SFML_002_BUG_H

@@ -38,6 +38,8 @@ public:
 
 
     static void printBug(const Bug *bug) ;
+
+    void runStimulation();
 };
 
 #endif //SFML_002_BOARD_H
