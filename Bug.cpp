@@ -105,4 +105,8 @@ void Bug::setAlive(bool alive) {
     Bug::alive = alive;
 }
 
+void Bug::setEatenBy(int eatenBy) {
+    Bug::eatenBy = eatenBy;
+}
+
 

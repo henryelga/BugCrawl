@@ -1,6 +1,7 @@
 #include "Board.h"
 #include "Crawler.h"
 #include "Hopper.h"
+#include "Teleporter.h"
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -58,6 +59,8 @@ void Board::parseLine(const string &strLine) {
         pair<int, int> position = make_pair(x, y);
         if (bug_type == "C") {
             temp = new Crawler(bug_id, position, direction, size);
+        } else if (bug_type == "T") {
+            temp = new Teleporter(bug_id, position, direction, size);
         } else if (bug_type == "H") {
             getline(strStream, strTemp, DELIMITER);
             hopLength = stoi(strTemp);
@@ -159,6 +162,7 @@ void Board::tapBoard() {
                     if (tempBug->isAlive()) {
                         bigBug->setSize(bigBug->getSize() + tempBug->getSize());
                         tempBug->setAlive(false);
+                        tempBug->setEatenBy(bigBug->getId());
                         cout << "Killed " << tempBug->getId() << endl;
                     }
 
@@ -177,7 +181,11 @@ void Board::displayLifeHistory() {
         for (const pair<int, int> &pos: path) {
             cout << "(" << pos.first << "," << pos.second << ") ";
         }
-        cout << (bug->isAlive() ? "Alive" : "Dead") << endl;
+        if (bug->isAlive()) {
+            cout << "Alive!" << endl;
+        } else {
+            cout << "Eaten by " << bug->getEatenBy() << endl;
+        }
     }
 }
 
@@ -190,7 +198,12 @@ void Board::writeLifeHistory(ofstream &fout) {
         for (const pair<int, int> &pos: path) {
             fout << "(" << pos.first << "," << pos.second << ") ";
         }
-        fout << (bug->isAlive() ? "Alive" : "Dead") << endl;
+        if (bug->isAlive()) {
+            fout << "Alive!" << endl;
+        } else {
+            f1out << "Eaten by " << bug->getEatenBy() << endl;
+        }
+
     }
     cout << "done" << endl;
 }

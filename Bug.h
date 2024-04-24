@@ -24,6 +24,7 @@ protected:
 //    Direction direction;
     int size{};
     int hopLength{};
+    int eatenBy;
 public:
     int getHopLength() const;
 
@@ -32,15 +33,13 @@ protected:
     list<pair<int, int>> path;
 
 public:
-//    Bug(int id, const pair<int, int> position, int direction, int size, int hopLength){
-//        this->alive = true;
-//        this->path.push_back(position);
-//    };
-    Bug(int id, const pair<int, int> position, int direction, int size, int hopLength)
-            : id(id), position(position), direction(direction), size(size), hopLength(hopLength) {
+    Bug(int id, const pair<int, int> position, int direction, int size, int hopLength, int eatenBy)
+            : id(id), position(position), direction(direction), size(size), hopLength(hopLength), eatenBy(eatenBy) {
         this->alive = true;
         this->path.push_back(position);
-    };
+    }
+
+    void setEatenBy(int eatenBy);;
 
 
     virtual void move() = 0;
@@ -54,6 +53,7 @@ public:
     const pair<int, int> &getPosition() const { return position; };
     int getDirection() const { return direction; };
     int getSize() const { return size; };
+    int getEatenBy() const { return eatenBy; };
     bool isAlive() const { return alive; };
     const list<pair<int, int>> &getPath() const { return path; };
 

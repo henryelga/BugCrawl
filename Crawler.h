@@ -14,7 +14,7 @@ public:
     Crawler(int id,
             pair<int, int> position,
             int direction,
-            int size): Bug(id, position, direction, size, 0){
+            int size): Bug(id, position, direction, size, 0, 0){
         this->type = "Crawler";
         this->alive = true;
         this->path = {this->position};

@@ -15,7 +15,7 @@ public:
     Hopper(int id,
             pair<int, int> position,
             int direction,
-            int size, int hopLength): Bug(id, position, direction, size, hopLength){
+            int size, int hopLength): Bug(id, position, direction, size, hopLength, 0){
         this->type = "Hopper";
         this->alive = true;
         this->path = {this->position};
