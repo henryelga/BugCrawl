@@ -201,7 +201,7 @@ void Board::writeLifeHistory(ofstream &fout) {
         if (bug->isAlive()) {
             fout << "Alive!" << endl;
         } else {
-            f1out << "Eaten by " << bug->getEatenBy() << endl;
+            fout << "Eaten by " << bug->getEatenBy() << endl;
         }
 
     }
