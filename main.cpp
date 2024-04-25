@@ -20,6 +20,7 @@ int main() {
     ofstream fout("bugs_life_history_date_time.txt");
     cout << "Sample Board" << endl;
     Board board;
+    srand(time(nullptr));
 
     int choice;
 
@@ -33,7 +34,8 @@ int main() {
         cout << "5. Display Life History of all Bugs (path taken)" << endl;
         cout << "6. Display all Cells listing their Bugs " << endl;
         cout << "7. Run Stimulation (generates a tap every second)" << endl;
-        cout << "8. Exit" << endl;
+        cout << "8. Display GUI" << endl;
+        cout << "9. Exit" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -63,6 +65,10 @@ int main() {
                 board.runStimulation();
                 break;
             case 8:
+                board.displayAllBugsSFML();
+                break;
+            case 9:
+                board.writeLifeHistory(fout);
                 cout << "Exiting program..." << endl;
                 break;
             default:
@@ -72,7 +78,7 @@ int main() {
 
         cout << endl;
 
-    } while (choice != 8);
+    } while (choice != 9);
 
     fin.close(); // Close input file stream
     fout.close(); // Close output file stream

@@ -8,7 +8,7 @@
 void Hopper::move() {
     pair<int, int> newPosition = position;
     while (isWayBlocked()) {
-        srand(time(nullptr));
+
         direction = rand() % 4 + 1;
     }
 

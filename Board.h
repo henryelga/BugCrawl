@@ -40,6 +40,10 @@ public:
     static void printBug(const Bug *bug) ;
 
     void runStimulation();
+
+    void displayAllBugsSFML();
+
+    int countAliveBugs();
 };
 
 #endif //SFML_002_BOARD_H

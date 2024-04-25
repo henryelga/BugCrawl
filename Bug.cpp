@@ -109,4 +109,8 @@ void Bug::setEatenBy(int eatenBy) {
     Bug::eatenBy = eatenBy;
 }
 
+void Bug::setPosition(pair<int, int> pair) {
+Bug::position = pair;
+}
+
 

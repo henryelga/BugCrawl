@@ -59,6 +59,8 @@ public:
 
     void setSize(int size);
     void setAlive(bool alive);
+
+    void setPosition(pair<int, int> pair1);
 };
 
 #endif //SFML_002_BUG_H
