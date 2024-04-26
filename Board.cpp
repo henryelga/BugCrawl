@@ -2,6 +2,7 @@
 #include "Crawler.h"
 #include "Hopper.h"
 #include "Teleporter.h"
+#include "SuperBug.h"
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -19,7 +20,6 @@ using namespace chrono;
 
 
 void Board::intializeBugs(ifstream &fin) {
-
     if (fin.good()) {
         string line;
 
@@ -146,13 +146,11 @@ void Board::findaBug(int id) const {
 
 void Board::tapBoard() {
 
-    bool gameRunning = true;
     for (Bug *bug: bugs_vector) {
         vector<Bug *> &v = cells[bug->getPosition().first][bug->getPosition().second];
         v.erase(remove(v.begin(), v.end(), bug));
         bug->move();
         cells[bug->getPosition().first][bug->getPosition().second].push_back(bug);
-
     }
     cout << "Bug Board Tapped!" << endl;
 
@@ -160,7 +158,15 @@ void Board::tapBoard() {
         for (int j = 0; j < 10; ++j) {
             if (cells[i][j].size() > 1) {
                 sort(cells[i][j].begin(), cells[i][j].end(), [](Bug *a, Bug *b) {
-                    return a->getSize() > b->getSize();
+                    // return a->getSize() > b->getSize();
+                    if (a->getSize() > b->getSize()) {
+                        return true;
+                    } else if (a->getSize() == b->getSize()) {
+                        // Choose random bug
+                        return rand() % 2 == 0;
+                    } else {
+                        return false;
+                    }
                 });
                 Bug *bigBug = cells[i][j][0];
                 for (int k = 1; k < cells[i][j].size(); k++) {
@@ -180,6 +186,56 @@ void Board::tapBoard() {
     int bugCount = 0;
     Bug *winner;
     for (Bug *bug: bugs_vector) {
+        if (bug->isAlive()) {
+            bugCount++;
+            winner = bug;
+        }
+    }
+    if (bugCount == 1) {
+        cout << "Winner: Bug " << winner->getId() << "!" << endl;
+    }
+}
+
+void Board::tapBoard(vector<Bug *> &bugs) {
+    for (Bug *bug: bugs) {
+        vector<Bug *> &v = cells[bug->getPosition().first][bug->getPosition().second];
+        v.erase(remove(v.begin(), v.end(), bug), v.end());
+        bug->move();
+        cells[bug->getPosition().first][bug->getPosition().second].push_back(bug);
+    }
+    cout << "Bug Board Tapped!" << endl;
+
+    for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 10; ++j) {
+            if (cells[i][j].size() > 1) {
+                sort(cells[i][j].begin(), cells[i][j].end(), [](Bug *a, Bug *b) {
+                    // return a->getSize() > b->getSize();
+                    if (a->getSize() > b->getSize()) {
+                        return true;
+                    } else if (a->getSize() == b->getSize()) {
+                        // Choose random bug
+                        return rand() % 2 == 0;
+                    } else {
+                        return false;
+                    }
+                });
+                Bug *bigBug = cells[i][j][0];
+                for (int k = 1; k < cells[i][j].size(); k++) {
+                    Bug *tempBug = cells[i][j][k];
+                    if (tempBug->isAlive()) {
+                        bigBug->setSize(bigBug->getSize() + tempBug->getSize());
+                        tempBug->setAlive(false);
+                        tempBug->setEatenBy(bigBug->getId());
+                        cout << "Killed " << tempBug->getId() << endl;
+                    }
+                }
+            }
+        }
+    }
+
+    int bugCount = 0;
+    Bug *winner;
+    for (Bug *bug: bugs) {
         if (bug->isAlive()) {
             bugCount++;
             winner = bug;
@@ -224,7 +280,7 @@ void Board::writeLifeHistory(ofstream &fout) {
         }
 
     }
-    cout << "done" << endl;
+    cout << "Written life history of all bugs to .txt file" << endl;
 }
 
 void Board::displayAllCells() {
@@ -258,273 +314,27 @@ void Board::runStimulation() {
 
 }
 
-int Board::countAliveBugs(){
+int Board::countAliveBugs() {
     int bugCount = 0;
     for (Bug *bug: bugs_vector) {
         if (bug->isAlive()) {
             bugCount++;
         }
     }
+    return bugCount;
 }
 
-
-//void Board::displayAllBugsSFML() {
-//    const int tileSize = 80; // Size of each tile on the grid (assuming a 10x10 grid)
-//
-//    // Create SFML window
-//    sf::RenderWindow window(sf::VideoMode(800, 800), "Bug Simulation");
-//    // Super-Bug controlled by arrow keys
-//    int superBugX = 0;
-//    int superBugY = 0;
-//    sf::CircleShape superBugShape(tileSize / 2.f);
-//    superBugShape.setFillColor(sf::Color::Yellow);
-//    superBugShape.setPosition(superBugX * tileSize, superBugY * tileSize);
-//
-//    sf::Texture crawlerTexture;
-//    crawlerTexture.loadFromFile("crawler.png");
-//
-//    sf::Texture hopperTexture;
-//    hopperTexture.loadFromFile("hopper.png");
-//
-//    sf::Texture teleporterTexture;
-//    teleporterTexture.loadFromFile("teleporter.png");
-//
-//// Create sprites for each type of bug
-//    sf::Sprite crawlerSprite(crawlerTexture);
-//    sf::Sprite hopperSprite(hopperTexture);
-//    sf::Sprite teleporterSprite(teleporterTexture);
-//
-//    // Main loop for the bug simulation with GUI
-//    while (window.isOpen()) {
-//        sf::Event event;
-//        while (window.pollEvent(event)) {
-//            if (event.type == sf::Event::Closed) {
-//                window.close();
-//            }
-//
-//            // Handle mouse click events (tapBoard)
-//            if (event.type == sf::Event::MouseButtonPressed) {
-//                if (event.mouseButton.button == sf::Mouse::Left) {
-//                    // Get mouse position relative to the window
-//                    sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-//
-//                    // Convert mouse position to grid coordinates
-//                    int x = mousePosition.x / tileSize;
-//                    int y = mousePosition.y / tileSize;
-//
-//                    // Perform tapBoard at the clicked grid position
-//                    tapBoard();
-//                }
-//            }
-//
-//            // Move super-bug with arrow keys
-//            if (event.type == sf::Event::KeyPressed) {
-//                if (event.key.code == sf::Keyboard::Left) {
-//                    superBugX = std::max(superBugX - 1, 0);
-//                } else if (event.key.code == sf::Keyboard::Right) {
-//                    superBugX = std::min(superBugX + 1, 9);
-//                } else if (event.key.code == sf::Keyboard::Up) {
-//                    superBugY = std::max(superBugY - 1, 0);
-//                } else if (event.key.code == sf::Keyboard::Down) {
-//                    superBugY = std::min(superBugY + 1, 9);
-//                }
-//                superBugShape.setPosition(superBugX * tileSize, superBugY * tileSize);
-//            }
-//        }
-//
-//        // Clear the window
-//        window.clear();
-//
-//        // Draw checkerboard pattern and render bugs on the board
-//        for (int i = 0; i < 10; ++i) {
-//            for (int j = 0; j < 10; ++j) {
-//                sf::RectangleShape tile(sf::Vector2f(tileSize, tileSize));
-//                tile.setPosition(i * tileSize, j * tileSize);
-//
-//                // Alternate tile colors to create checkerboard pattern
-//                if ((i + j) % 2 == 0) {
-//                    tile.setFillColor(sf::Color(34, 139, 34)); // Dark Green
-//                } else {
-//                    tile.setFillColor(sf::Color(204, 255, 204)); // Light Green
-//                }
-//                window.draw(tile);
-//
-//                // Render bugs on the board
-//                const vector<Bug *> &bugs = cells[i][j];
-//                for (const Bug *bug: bugs) {
-//                    if (bug->isAlive()) {
-//                        // Set different colors based on bug type
-//                        sf::Color bugColor;
-//                        if (bug->getType() == "Crawler") {
-//                            bugColor = sf::Color::Red;
-//                        } else if (bug->getType() == "Hopper") {
-//                            bugColor = sf::Color::Blue;
-//                        } else if (bug->getType() == "Teleporter") {
-//                            bugColor = sf::Color::Green;
-//                        } else {
-//                            bugColor = sf::Color::White; // Default color
-//                        }
-//
-//                        sf::CircleShape bugShape(tileSize / 2.f);
-//                        bugShape.setFillColor(bugColor);
-//                        bugShape.setPosition(i * tileSize, j * tileSize);
-//
-//                        window.draw(bugShape);
-//                    }
-//                }
-//            }
-//        }
-//
-//        // Draw super-bug
-//        window.draw(superBugShape);
-//
-//        // Display the window
-//        window.display();
-//    }
-//}
-
-//void Board::displayAllBugsSFML() {
-//    const int tileSize = 80; // Size of each tile on the grid (assuming a 10x10 grid)
-//
-//    // Create SFML window
-//    sf::RenderWindow window(sf::VideoMode(800, 800), "Bug Simulation");
-//
-//    // Super-Bug controlled by arrow keys
-//    int superBugX = 0;
-//    int superBugY = 0;
-//    sf::RectangleShape superBugShape(sf::Vector2f(tileSize, tileSize));
-//    superBugShape.setFillColor(sf::Color::Yellow);
-//    superBugShape.setPosition(superBugX * tileSize, superBugY * tileSize);
-//
-//    // Load bug textures
-//    sf::Texture crawlerTexture;
-//    crawlerTexture.loadFromFile("crawler.png");
-//
-//    sf::Texture hopperTexture;
-//    hopperTexture.loadFromFile("hopper.png");
-//
-//    sf::Texture teleporterTexture;
-//    teleporterTexture.loadFromFile("teleporter.png");
-//
-//    // Create sprites for each type of bug
-//    sf::Sprite crawlerSprite(crawlerTexture);
-//    sf::Sprite hopperSprite(hopperTexture);
-//    sf::Sprite teleporterSprite(teleporterTexture);
-//
-//    // Set sprite scale to match the tileSize
-//    crawlerSprite.setScale(tileSize / static_cast<float>(crawlerTexture.getSize().x),
-//                           tileSize / static_cast<float>(crawlerTexture.getSize().y));
-//
-//    hopperSprite.setScale(tileSize / static_cast<float>(hopperTexture.getSize().x),
-//                          tileSize / static_cast<float>(hopperTexture.getSize().y));
-//
-//    teleporterSprite.setScale(tileSize / static_cast<float>(teleporterTexture.getSize().x),
-//                              tileSize / static_cast<float>(teleporterTexture.getSize().y));
-//
-//    // Main loop for the bug simulation with GUI
-//    while (window.isOpen()) {
-//        sf::Event event;
-//        while (window.pollEvent(event)) {
-//            if (event.type == sf::Event::Closed) {
-//                window.close();
-//            }
-//
-//            // Handle mouse click events (tapBoard)
-//            if (event.type == sf::Event::MouseButtonPressed) {
-//                if (event.mouseButton.button == sf::Mouse::Left) {
-//                    // Get mouse position relative to the window
-//                    sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-//
-//                    // Convert mouse position to grid coordinates
-//                    int x = mousePosition.x / tileSize;
-//                    int y = mousePosition.y / tileSize;
-//
-//                    // Perform tapBoard at the clicked grid position
-//                    tapBoard();
-//                }
-//            }
-//
-//            // Move super-bug with arrow keys
-//            if (event.type == sf::Event::KeyPressed) {
-//                if (event.key.code == sf::Keyboard::Left) {
-//                    superBugX = std::max(superBugX - 1, 0);
-//                } else if (event.key.code == sf::Keyboard::Right) {
-//                    superBugX = std::min(superBugX + 1, 9);
-//                } else if (event.key.code == sf::Keyboard::Up) {
-//                    superBugY = std::max(superBugY - 1, 0);
-//                } else if (event.key.code == sf::Keyboard::Down) {
-//                    superBugY = std::min(superBugY + 1, 9);
-//                }
-//                superBugShape.setPosition(superBugX * tileSize, superBugY * tileSize);
-//            }
-//        }
-//
-//        // Clear the window
-//        window.clear();
-//
-//        // Draw checkerboard pattern and render bugs on the board
-//        for (int i = 0; i < 10; ++i) {
-//            for (int j = 0; j < 10; ++j) {
-//                sf::RectangleShape tile(sf::Vector2f(tileSize, tileSize));
-//                tile.setPosition(i * tileSize, j * tileSize);
-//
-//                // Alternate tile colors to create checkerboard pattern
-//                if ((i + j) % 2 == 0) {
-//                    tile.setFillColor(sf::Color(34, 139, 34)); // Dark Green
-//                } else {
-//                    tile.setFillColor(sf::Color(204, 255, 204)); // Light Green
-//                }
-//                window.draw(tile);
-//
-//                // Render bugs on the board
-//                const vector<Bug *> &bugs = cells[i][j];
-//                for (const Bug *bug : bugs) {
-//                    if (bug->isAlive()) {
-//                        // Set sprite based on bug type
-//                        if (bug->getType() == "Crawler") {
-//                            crawlerSprite.setPosition(i * tileSize, j * tileSize);
-//                            window.draw(crawlerSprite);
-//                        } else if (bug->getType() == "Hopper") {
-//                            hopperSprite.setPosition(i * tileSize, j * tileSize);
-//                            window.draw(hopperSprite);
-//                        } else if (bug->getType() == "Teleporter") {
-//                            teleporterSprite.setPosition(i * tileSize, j * tileSize);
-//                            window.draw(teleporterSprite);
-//                        } else {
-//                            // Unknown bug type
-//                            cout << "Unknown bug type: " << bug->getType() << endl;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        // Draw super-bug
-//        window.draw(superBugShape);
-//
-//        // Display the window
-//        window.display();
-//    }
-//}
-
 void Board::displayAllBugsSFML() {
-    const int tileSize = 80; // Size of each tile on the grid (assuming a 10x10 grid)
+    const int tileSize = 90;
 
-    // Create SFML window
-    sf::RenderWindow window(sf::VideoMode(800, 800), "Bug Simulation");
+    // SFML window
+    sf::RenderWindow window(sf::VideoMode(900, 900), "Bug Simulation");
 
     // Super-Bug controlled by arrow keys
     int superBugX = 0;
     int superBugY = 0;
-    sf::Texture superBugTexture;
-    superBugTexture.loadFromFile("superBug.png"); // Load texture for super bug
-    superBugTexture.setSmooth(true);
-    sf::Sprite superBugSprite(superBugTexture);
-    superBugSprite.setScale(tileSize / static_cast<float>(superBugTexture.getSize().x),
-                            tileSize / static_cast<float>(superBugTexture.getSize().y));
-    superBugSprite.setPosition(superBugX * tileSize, superBugY * tileSize);
 
-    // Load bug textures
+    // Bug textures
     sf::Texture crawlerTexture;
     crawlerTexture.loadFromFile("crawler.png");
     crawlerTexture.setSmooth(true);
@@ -537,12 +347,17 @@ void Board::displayAllBugsSFML() {
     teleporterTexture.loadFromFile("teleporter.png");
     teleporterTexture.setSmooth(true);
 
-    // Create sprites for each type of bug
+    sf::Texture superBugTexture;
+    superBugTexture.loadFromFile("superBug.png");
+    superBugTexture.setSmooth(true);
+
+    // Sprites
     sf::Sprite crawlerSprite(crawlerTexture);
     sf::Sprite hopperSprite(hopperTexture);
     sf::Sprite teleporterSprite(teleporterTexture);
+    sf::Sprite superBugSprite(superBugTexture);
 
-    // Set sprite scale to match the tileSize
+    // Sprites Sizes
     crawlerSprite.setScale(tileSize / static_cast<float>(crawlerTexture.getSize().x),
                            tileSize / static_cast<float>(crawlerTexture.getSize().y));
 
@@ -552,7 +367,12 @@ void Board::displayAllBugsSFML() {
     teleporterSprite.setScale(tileSize / static_cast<float>(teleporterTexture.getSize().x),
                               tileSize / static_cast<float>(teleporterTexture.getSize().y));
 
-    // Main loop for the bug simulation with GUI
+    superBugSprite.setScale(tileSize / static_cast<float>(superBugTexture.getSize().x),
+                            tileSize / static_cast<float>(superBugTexture.getSize().y));
+
+    SuperBug superBug(0, pair<int, int>(), 0, 0);
+    superBug.setSize(10);
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -560,46 +380,40 @@ void Board::displayAllBugsSFML() {
                 window.close();
             }
 
-            // Handle mouse click events (tapBoard)
+            // Mouse Clicks
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    // Get mouse position relative to the window
-                    sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-
-                    // Convert mouse position to grid coordinates
-                    int x = mousePosition.x / tileSize;
-                    int y = mousePosition.y / tileSize;
-
-                    // Perform tapBoard at the clicked grid position
-                    tapBoard();
+                    tapBoard(bugs_vector);
                 }
             }
 
-            // Move super-bug with arrow keys
+            // Move super-bug
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Left) {
-                    superBugX = std::max(superBugX - 1, 0);
+                    superBug.moveSuperBug(sf::Keyboard::Left);
                 } else if (event.key.code == sf::Keyboard::Right) {
-                    superBugX = std::min(superBugX + 1, 9);
+                    superBug.moveSuperBug(sf::Keyboard::Right);
                 } else if (event.key.code == sf::Keyboard::Up) {
-                    superBugY = std::max(superBugY - 1, 0);
+                    superBug.moveSuperBug(sf::Keyboard::Up);
                 } else if (event.key.code == sf::Keyboard::Down) {
-                    superBugY = std::min(superBugY + 1, 9);
+                    superBug.moveSuperBug(sf::Keyboard::Down);
                 }
-                superBugSprite.setPosition(superBugX * tileSize, superBugY * tileSize);
+                superBugSprite.setPosition(superBug.getPosition().first * tileSize,
+                                           superBug.getPosition().second * tileSize);
+                cout << "Super Bug: " << superBug.getPosition().first << "," << superBug.getPosition().second
+                     << ", Size: " << superBug.getSize() << endl;
             }
         }
 
-        // Clear the window
         window.clear();
 
-        // Draw checkerboard pattern and render bugs on the board
+        // Board Pattern
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {
                 sf::RectangleShape tile(sf::Vector2f(tileSize, tileSize));
                 tile.setPosition(i * tileSize, j * tileSize);
 
-                // Alternate tile colors to create checkerboard pattern
+                // Tile Colours
                 if ((i + j) % 2 == 0) {
                     tile.setFillColor(sf::Color(34, 139, 34)); // Dark Green
                 } else {
@@ -607,9 +421,9 @@ void Board::displayAllBugsSFML() {
                 }
                 window.draw(tile);
 
-                // Render bugs on the board
+                // Render bugs
                 const vector<Bug *> &bugs = cells[i][j];
-                for (const Bug *bug : bugs) {
+                for (const Bug *bug: bugs) {
                     if (bug->isAlive()) {
                         // Set sprite based on bug type
                         if (bug->getType() == "Crawler") {
@@ -631,6 +445,15 @@ void Board::displayAllBugsSFML() {
         }
 
         // Draw super-bug
+        vector<Bug *> &bugsAtSuperBugPos = cells[superBug.getPosition().first][superBug.getPosition().second];
+        for (Bug *bug: bugsAtSuperBugPos) {
+            if (bug->isAlive() && bug->getType() != "SuperBug") {
+                superBug.setSize(superBug.getSize() + bug->getSize());
+                bug->setAlive(false);
+                bug->setEatenBy(superBug.getId());
+                cout << "Super Bug ate Bug " << bug->getId() << endl;
+            }
+        }
         window.draw(superBugSprite);
 
         // Display the window

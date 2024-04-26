@@ -13,7 +13,9 @@ add_executable(sfml_002 main.cpp
         Board.cpp
         Board.cpp
         Teleporter.h
-        Teleporter.cpp)
+        Teleporter.cpp
+        SuperBug.h
+        SuperBug.cpp)
 
 set(SFML_STATIC_LIBRARIES TRUE)
 set(SFML_DIR C:/SFML-2.6.1/lib/cmake/SFML)

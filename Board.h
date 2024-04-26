@@ -44,6 +44,8 @@ public:
     void displayAllBugsSFML();
 
     int countAliveBugs();
+
+    void tapBoard(vector<Bug *> &bugs);
 };
 
 #endif //SFML_002_BOARD_H
