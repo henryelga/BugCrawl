@@ -46,6 +46,8 @@ public:
     int countAliveBugs();
 
     void tapBoard(vector<Bug *> &bugs);
+
+    void tapBoard(const vector<Bug *> &bugs);
 };
 
 #endif //SFML_002_BOARD_H

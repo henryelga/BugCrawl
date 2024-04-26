@@ -196,6 +196,7 @@ void Board::tapBoard() {
     }
 }
 
+
 void Board::tapBoard(vector<Bug *> &bugs) {
     for (Bug *bug: bugs) {
         vector<Bug *> &v = cells[bug->getPosition().first][bug->getPosition().second];
@@ -308,7 +309,7 @@ void Board::runStimulation() {
     cout << "Running Stimulation" << endl;
 
     while (countAliveBugs() > 1) {
-        tapBoard();
+        tapBoard(bugs_vector);
         sleep_for(seconds(1));
     }
 
